@@ -69,7 +69,7 @@ def jmhVersion = '1.37'
 def jcstressVersion = '0.16'
 
 def agronaGroup = 'org.agrona'
-def agronaVersion = '1.22.0-SNAPSHOT'
+def agronaVersion = file('version.txt').text.trim()
 
 def getConfigProperty(final String projectPropertyName, final String envVarName) {
     String value = project.findProperty(projectPropertyName)
@@ -86,12 +86,12 @@ def getConfigProperty(final String projectPropertyName, final String envVarName)
 }
 
 ext {
-    isReleaseVersion = !agronaVersion.endsWith('-SNAPSHOT')
+    isReleaseVersion = true
 
-    ossrhReleasesRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-    ossrhSnapshotsRepoUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
-    ossrhUsername = getConfigProperty('ossrhUsername', 'OSSRH_USERNAME')
-    ossrhPassword = getConfigProperty('ossrhPassword', 'OSSRH_PASSWORD')
+    ossrhReleasesRepoUrl = 'http://localhost:8081/artifactory/test-maven-repo/'
+    ossrhSnapshotsRepoUrl = 'http://localhost:8081/artifactory/test-maven-repo/'
+    ossrhUsername = 'admin'
+    ossrhPassword = 'password'
 
     signingKey = getConfigProperty('signingKey', 'SIGNING_GPG_SECRET_KEY')         // NOTE: ASCII armored secret key
     signingPassword = getConfigProperty('signingPassword', 'SIGNING_GPG_PASSWORD') // NOTE: Plain text
@@ -356,10 +356,11 @@ project(':agrona') {
         repositories {
             maven {
                 name = 'MavenCentral'
-                url(!isReleaseVersion ? ossrhSnapshotsRepoUrl : ossrhReleasesRepoUrl)
+                url = 'http://localhost:8081/artifactory/test-maven-repo/'
+                allowInsecureProtocol = true
                 credentials {
-                    username = ossrhUsername
-                    password = ossrhPassword
+                    username = 'admin'
+                    password = 'password'
                 }
             }
         }
@@ -441,10 +442,11 @@ project(':agrona-agent') {
         repositories {
             maven {
                 name = 'MavenCentral'
-                url(!isReleaseVersion ? ossrhSnapshotsRepoUrl : ossrhReleasesRepoUrl)
+                url = 'http://localhost:8081/artifactory/test-maven-repo/'
+                allowInsecureProtocol = true
                 credentials {
-                    username = ossrhUsername
-                    password = ossrhPassword
+                    username = 'admin'
+                    password = 'password'
                 }
             }
         }
